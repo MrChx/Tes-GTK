@@ -72,10 +72,8 @@ async function ensureAdmin() {
   console.log(`Admin default dibuat: ${username}`)
 }
 
-if (!process.env.VERCEL) {
-  app.listen(port, () => {
-    console.log(`API GTK berjalan di http://localhost:${port}`)
-  })
-}
+app.listen(port, () => {
+  console.log(`API GTK berjalan di port ${port}`)
+})
 
 export default app
