@@ -67,6 +67,7 @@ export default function Login() {
             <div>
               <h2>Masuk Sistem</h2>
               <p className="muted">Gunakan akun admin terdaftar untuk melanjutkan.</p>
+              <p>Username: admin, Password: admin123</p>
             </div>
 
             {error && (
