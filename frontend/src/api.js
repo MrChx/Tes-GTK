@@ -1,4 +1,5 @@
 const TOKEN_KEY = 'gtk_token'
+const API_BASE = (import.meta.env.VITE_API_URL || '/api').replace(/\/$/, '')
 
 export function getToken() {
   return localStorage.getItem(TOKEN_KEY)
@@ -11,7 +12,8 @@ export function setToken(token) {
 
 export async function api(path, { method = 'GET', body } = {}) {
   const token = getToken()
-  const response = await fetch(`/api${path}`, {
+  const cleanPath = path.startsWith('/') ? path : `/${path}`
+  const response = await fetch(`${API_BASE}${cleanPath}`, {
     method,
     headers: {
       ...(body ? { 'Content-Type': 'application/json' } : {}),

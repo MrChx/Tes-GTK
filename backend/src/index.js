@@ -15,11 +15,30 @@ if (!process.env.JWT_SECRET) {
 const app = express()
 const port = Number(process.env.PORT || 4000)
 
-app.use(cors({ origin: ['http://localhost:5173', 'http://127.0.0.1:5173'] }))
+app.use(
+  cors({
+    origin: true,
+    credentials: true,
+  }),
+)
 app.use(express.json())
 
+// Lazy ensure admin pada serverless/lokal saat request pertama
+let adminChecked = false
+app.use(async (_req, _res, next) => {
+  if (!adminChecked) {
+    try {
+      await ensureAdmin()
+      adminChecked = true
+    } catch (err) {
+      console.warn('Pengecekan akun admin awal:', err.message)
+    }
+  }
+  next()
+})
+
 app.get('/api/health', (_req, res) => {
-  res.json({ ok: true })
+  res.json({ ok: true, timestamp: new Date().toISOString() })
 })
 
 app.use('/api/auth', authRoutes)
@@ -53,14 +72,10 @@ async function ensureAdmin() {
   console.log(`Admin default dibuat: ${username}`)
 }
 
-async function start() {
-  await ensureAdmin()
+if (!process.env.VERCEL) {
   app.listen(port, () => {
     console.log(`API GTK berjalan di http://localhost:${port}`)
   })
 }
 
-start().catch((error) => {
-  console.error('Gagal menjalankan server:', error.message)
-  process.exit(1)
-})
+export default app
